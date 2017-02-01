@@ -1,6 +1,7 @@
 package borradofotos;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.*;
 import org.apache.commons.net.ftp.*;
 
@@ -55,7 +56,7 @@ public class BorradoFotos {
                             System.out.println("FOTOS BORRADAS:");
                         }
                         System.out.println("\t" + rutaNombreSubFichero);
-                        remoto.deleteFile(rutaNombreSubFichero);
+                        //remoto.deleteFile(rutaNombreSubFichero);
                         fotosBorradas++;
                     }
                 }
@@ -69,7 +70,7 @@ public class BorradoFotos {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
 
         dirExcluidos = new ArrayList<>();
         dirExcluidos.add("cache");
@@ -77,8 +78,10 @@ public class BorradoFotos {
         dirExcluidos.add("watermark");
 
         fotosBorradas = 0;
+        
+        DataBase connectDB = new DataBase();
 
-        noBorrar = fotosEnWikkiWi();
+        noBorrar = connectDB.getPhotos();
 
         /* Servidor remoto 
         String servidor = "23.235.204.50";
@@ -109,7 +112,7 @@ public class BorradoFotos {
                 return;
             }
 
-            listarDirectorio(remoto, rutaFotos, "", 0);
+            listarDirectorio(remoto, pathServerPhotos, "", 0);
 
             System.out.println("SE HAN BORRADO " + fotosBorradas + " FOTOS.");
 
