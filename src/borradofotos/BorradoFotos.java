@@ -83,35 +83,10 @@ public class BorradoFotos {
 
         noBorrar = connectDB.getPhotos();
 
-        /* Servidor remoto 
-        String servidor = "23.235.204.50";
-        int puerto = 21;
-        String usuario = "salamillo@wikkiwi.com";
-        String clave = "5{*:ntbS=W+x";*/
- /* 
-        Servidor de prueba */
-        String servidor = "192.168.0.166";
-        int puerto = 21;
-        String usuario = "admin";
-        String clave = "wikkiwi";
-
         FTPClient remoto = new FTPClient();
 
         try {
-            remoto.connect(servidor, puerto);
-
-            if (!FTPReply.isPositiveCompletion(remoto.getReplyCode())) {
-                System.out.println("Fallo en la conexión");
-                return;
-            }
-
-            boolean success = remoto.login(usuario, clave);
-
-            if (!success) {
-                System.out.println("Fallo en la autenticación");
-                return;
-            }
-
+            
             listarDirectorio(remoto, pathServerPhotos, "", 0);
 
             System.out.println("SE HAN BORRADO " + fotosBorradas + " FOTOS.");
@@ -119,15 +94,6 @@ public class BorradoFotos {
         } catch (IOException ex) {
             System.out.println("¡Oops! Esto no deberia estar pasando...");
             ex.printStackTrace();
-        } finally {
-            try {
-                if (remoto.isConnected()) {
-                    remoto.logout();
-                    remoto.disconnect();
-                }
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
         }
     }
 
