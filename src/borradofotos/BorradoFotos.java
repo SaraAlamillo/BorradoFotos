@@ -14,8 +14,8 @@ import org.apache.commons.net.ftp.*;
 public class BorradoFotos {
 
     private static List<String> noBorrar;
-    // private static final String rutaFotos = "/media/catalog/product";
-    private static final String rutaFotos = "/public_html/media/catalog/product";
+    private static final String rutaFotos = "/media/catalog/product";
+    // private static final String rutaFotos = "/public_html/media/catalog/product";
     private static List<String> fotosServidor;
     private static List<String> dirExcluidos;
 
@@ -33,7 +33,8 @@ public class BorradoFotos {
 
             ResultSet rs;
             try (
-                    Connection conexion = DriverManager.getConnection("jdbc:mysql://vps21021.inmotionhosting.com/wikkiwi_m", "mg_wikki", "\\SgO3^Va1v~5")) {
+                    /* Connection conexion = DriverManager.getConnection("jdbc:mysql://vps21021.inmotionhosting.com/wikkiwi_m", "mg_wikki", "\\SgO3^Va1v~5")) */
+                Connection conexion = DriverManager.getConnection("jdbc:mysql://192.168.0.166/wikkiwi_m", "root", "")) {
                 Statement s = conexion.createStatement();
                 rs = s.executeQuery("SELECT `value` FROM `wkcatalog_product_entity_media_gallery`");
                 while (rs.next()) {
@@ -69,7 +70,7 @@ public class BorradoFotos {
                 if (nombreSubFichero.equals(".") || nombreSubFichero.equals("..")) {
                     continue;
                 }
-                
+
                 if (dirExcluidos.contains(nombreSubFichero)) {
                     continue;
                 }
@@ -80,7 +81,7 @@ public class BorradoFotos {
                     listarDirectorio(remoto, dirToList, nombreSubFichero, nivel + 1);
                 } else {
                     fotosServidor.add(rutaNombreSubFichero);
-                    System.out.println(rutaNombreSubFichero);
+                    /*System.out.println(rutaNombreSubFichero);*/
                 }
 
             }
@@ -93,26 +94,26 @@ public class BorradoFotos {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        
+
         dirExcluidos = new ArrayList<>();
         dirExcluidos.add("cache");
         dirExcluidos.add("thumbs");
         dirExcluidos.add("watermark");
-        
+
         noBorrar = fotosEnWikkiWi();
-        
-        /* Servidor remoto */
+
+        /* Servidor remoto 
         String servidor = "23.235.204.50";
         int puerto = 21;
         String usuario = "salamillo@wikkiwi.com";
-        String clave = "5{*:ntbS=W+x";
-         /* 
-        Servidor de prueba 
+        String clave = "5{*:ntbS=W+x";*/
+        /* 
+        Servidor de prueba */
         String servidor = "192.168.0.166";
         int puerto = 21;
         String usuario = "admin";
         String clave = "wikkiwi";
-         */
+         
 
         FTPClient remoto = new FTPClient();
 
@@ -133,6 +134,20 @@ public class BorradoFotos {
 
             fotosServidor = new ArrayList<>();
             listarDirectorio(remoto, rutaFotos, "", 0);
+
+            System.out.println("FOTOS BORRADAS:");
+            
+            int numBorrados = 0;
+
+            for (int i = 0; i < fotosServidor.size(); i++) {
+                if (!noBorrar.contains(fotosServidor.get(i))) {
+                    System.out.println("\t" + fotosServidor.get(i));
+                    remoto.deleteFile(fotosServidor.get(i));
+                    numBorrados++;
+                }
+            }
+            
+            System.out.println("SE HAN BORRADO " + numBorrados  + " FOTOS.");
 
         } catch (IOException ex) {
             System.out.println("¡Oops! Esto no deberia estar pasando...");
