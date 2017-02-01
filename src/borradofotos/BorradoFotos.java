@@ -12,10 +12,12 @@ import org.apache.commons.net.ftp.*;
  * @author Sara Alamillo Arroyo
  */
 public class BorradoFotos {
-    
+
     private static List<String> noBorrar;
-    private static final String rutaFotos = "/media/catalog/product";
+    // private static final String rutaFotos = "/media/catalog/product";
+    private static final String rutaFotos = "/public_html/media/catalog/product";
     private static List<String> fotosServidor;
+    private static List<String> dirExcluidos;
 
     /**
      * Devuelve una lista con todas las rutas de las fotos de las propiedades
@@ -48,37 +50,43 @@ public class BorradoFotos {
     }
 
     private static void listarDirectorio(FTPClient remoto, String dirPadre, String dirActual, int nivel) throws IOException {
-        
+
         String dirToList = dirPadre;
-        
+
         if (!dirActual.equals("")) {
             dirToList += "/" + dirActual;
         }
-        
+
         FTPFile[] subFicheros = remoto.listFiles(dirToList);
-        
+
         if (subFicheros != null && subFicheros.length > 0) {
-            
+
             for (FTPFile subFichero : subFicheros) {
-                
+
                 String nombreSubFichero = subFichero.getName();
+                String rutaNombreSubFichero = dirToList + "/" + nombreSubFichero;
+
+                if (nombreSubFichero.equals(".") || nombreSubFichero.equals("..")) {
+                    continue;
+                }
                 
-                if (nombreSubFichero.equals(".") || nombreSubFichero.equals("..")) { continue; }
-                
+                if (dirExcluidos.contains(nombreSubFichero)) {
+                    continue;
+                }
+
                 /*for (int i = 0; i < nivel; i++) { System.out.print("\t"); }*/
-                
                 if (subFichero.isDirectory()) {
                     /*System.out.println("[" + nombreSubFichero + "]");*/
                     listarDirectorio(remoto, dirToList, nombreSubFichero, nivel + 1);
                 } else {
-                    nombreSubFichero = dirPadre + "/" + nombreSubFichero;
-                    fotosServidor.add(nombreSubFichero);
+                    fotosServidor.add(rutaNombreSubFichero);
+                    System.out.println(rutaNombreSubFichero);
                 }
-                
+
             }
-            
+
         }
-        
+
     }
 
     /**
@@ -86,20 +94,25 @@ public class BorradoFotos {
      */
     public static void main(String[] args) {
         
+        dirExcluidos = new ArrayList<>();
+        dirExcluidos.add("cache");
+        dirExcluidos.add("thumbs");
+        dirExcluidos.add("watermark");
+        
         noBorrar = fotosEnWikkiWi();
         
-        /* Servidor remoto
+        /* Servidor remoto */
         String servidor = "23.235.204.50";
         int puerto = 21;
         String usuario = "salamillo@wikkiwi.com";
         String clave = "5{*:ntbS=W+x";
-         *//* 
+         /* 
         Servidor de prueba 
-         */
         String servidor = "192.168.0.166";
         int puerto = 21;
         String usuario = "admin";
         String clave = "wikkiwi";
+         */
 
         FTPClient remoto = new FTPClient();
 
@@ -120,8 +133,9 @@ public class BorradoFotos {
 
             fotosServidor = new ArrayList<>();
             listarDirectorio(remoto, rutaFotos, "", 0);
+
         } catch (IOException ex) {
-            System.out.println("Oops! Something wrong happened");
+            System.out.println("¡Oops! Esto no deberia estar pasando...");
             ex.printStackTrace();
         } finally {
             try {
