@@ -1,6 +1,7 @@
 package borradofotos;
 
 import java.io.IOException;
+import java.util.*;
 import org.apache.commons.net.ftp.*;
 
 /**
@@ -15,8 +16,14 @@ public class FTP {
     private final String user;
     private final String password;
     private FTPClient connect;
+    private List<String> notTouch;
 
     public FTP() throws IOException {
+        this.notTouch = new ArrayList<>();
+        this.notTouch.add("cache");
+        this.notTouch.add("thumbs");
+        this.notTouch.add("watermark");
+        
         this.port = 21;
         if (BorradoFotos.local) {
             this.server = "192.168.0.166";

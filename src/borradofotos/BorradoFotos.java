@@ -15,11 +15,6 @@ public class BorradoFotos {
 
     public static final boolean local = true;
     public static final String pathServerPhotos = "/media/catalog/product";
-    private static List<String> noBorrar;
-    // private static final String rutaFotos = "/public_html/media/catalog/product";
-    private static List<String> dirExcluidos;
-    private static int fotosBorradas;
-
 
     private static void listarDirectorio(FTPClient remoto, String dirPadre, String dirActual, int nivel) throws IOException {
 
@@ -70,31 +65,12 @@ public class BorradoFotos {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws SQLException {
-
-        dirExcluidos = new ArrayList<>();
-        dirExcluidos.add("cache");
-        dirExcluidos.add("thumbs");
-        dirExcluidos.add("watermark");
-
-        fotosBorradas = 0;
+    public static void main(String[] args) throws SQLException, IOException {
         
         DataBase connectDB = new DataBase();
+        FTP connectFTP = new FTP();
 
-        noBorrar = connectDB.getPhotos();
-
-        FTPClient remoto = new FTPClient();
-
-        try {
-            
-            listarDirectorio(remoto, pathServerPhotos, "", 0);
-
-            System.out.println("SE HAN BORRADO " + fotosBorradas + " FOTOS.");
-
-        } catch (IOException ex) {
-            System.out.println("¡Oops! Esto no deberia estar pasando...");
-            ex.printStackTrace();
-        }
+        
     }
 
 }
