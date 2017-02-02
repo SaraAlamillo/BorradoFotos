@@ -1,5 +1,6 @@
 package borradofotos;
 
+import java.io.IOException;
 import java.sql.*;
 import java.util.*;
 
@@ -38,15 +39,16 @@ public class DataBase {
         this.connect = DriverManager.getConnection("jdbc:mysql://" + this.server + "/" + this.DB, this.user, this.password);
     }
 
-    public List<String> getPhotos() {
+    public List<String> getPhotos() throws IOException {
         List<String> photos = new ArrayList<>();
+        FTP ftp = new FTP();
 
         try {
             
             Statement s = this.connect.createStatement();
             try (ResultSet rs = s.executeQuery("SELECT `value` FROM `wkcatalog_product_entity_media_gallery`")) {
                 while (rs.next()) {
-                    photos.add(FTP.pathPhotos + "/" + rs.getString("value"));
+                    photos.add(ftp.getPathPhotos() + "/" + rs.getString("value"));
                 }
             }
 

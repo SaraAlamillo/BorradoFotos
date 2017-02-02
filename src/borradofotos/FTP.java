@@ -19,26 +19,26 @@ public class FTP {
     private final List<String> notTouch;
     private int photosDelete;
     private final List<String> photosServer;
-    public static String pathPhotos;
+    private String pathPhotos;
 
     public FTP() throws IOException {
-        
+
         if (BorradoFotos.local) {
             pathPhotos = "/media/catalog/product";
         } else {
             pathPhotos = "/public_html/media/catalog/product";
         }
-        
+
         this.notTouch = new ArrayList<>();
         this.notTouch.add("cache");
         this.notTouch.add("thumbs");
         this.notTouch.add("watermark");
         this.notTouch.add(".");
         this.notTouch.add("..");
-        
+
         this.photosDelete = 0;
         this.photosServer = new ArrayList<>();
-        
+
         this.port = 21;
         if (BorradoFotos.local) {
             this.server = "192.168.0.166";
@@ -53,7 +53,7 @@ public class FTP {
     }
 
     private void connectFTP() throws IOException {
-        
+
         this.connect = new FTPClient();
         this.connect.connect(this.server, this.port);
 
@@ -68,11 +68,11 @@ public class FTP {
         }
 
     }
-    
+
     public void setPhotosServer() throws IOException {
         this.setPhotosServer(pathPhotos, "");
     }
-    
+
     public void setPhotosServer(String dirDad, String dirActual) throws IOException {
 
         String dirToList = dirDad;
@@ -104,21 +104,33 @@ public class FTP {
         }
 
     }
-    
+
     public List<String> getPhotosServer() {
         return this.photosServer;
     }
-    
-    public int deletePhotos(List<String> dbPhotos) throws IOException {
-        
-        for(String name : this.photosServer) {
-            if (!dbPhotos.contains(name)) {
-                this.connect.deleteFile(name);
-                System.out.println("\t-> " + name);
-                this.photosDelete++;
-            }
+
+    public List<String> getOldPhotos(List<String> dbPhotos) {
+        List<String> oldPhotos = new ArrayList<>();
+
+        this.photosServer.stream().filter((name) -> (!dbPhotos.contains(name))).forEachOrdered((name) -> {
+            oldPhotos.add(name);
+        });
+
+        return oldPhotos;
+    }
+
+    public int deletePhotos(List<String> photos) throws IOException {
+
+        for (String p : photos) {
+            this.connect.deleteFile(p);
+            System.out.println("\t-> ...Borrando... " + p);
+            this.photosDelete++;
         }
-        
+
         return this.photosDelete;
+    }
+
+    public String getPathPhotos() {
+        return this.pathPhotos;
     }
 }
