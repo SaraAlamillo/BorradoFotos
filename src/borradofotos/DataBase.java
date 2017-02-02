@@ -46,7 +46,7 @@ public class DataBase {
             Statement s = this.connect.createStatement();
             try (ResultSet rs = s.executeQuery("SELECT `value` FROM `wkcatalog_product_entity_media_gallery`")) {
                 while (rs.next()) {
-                    photos.add(BorradoFotos.pathServerPhotos + "/" + rs.getString("value"));
+                    photos.add(FTP.pathPhotos + "/" + rs.getString("value"));
                 }
             }
 
