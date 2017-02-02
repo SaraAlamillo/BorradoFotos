@@ -73,12 +73,12 @@ public class FTP {
         this.setPhotosServer(pathPhotos, "");
     }
 
-    public void setPhotosServer(String dirDad, String dirActual) throws IOException {
+    public void setPhotosServer(String parentDir, String currentDir) throws IOException {
 
-        String dirToList = dirDad;
+        String dirToList = parentDir;
 
-        if (!dirActual.equals("")) {
-            dirToList += "/" + dirActual;
+        if (!currentDir.equals("")) {
+            dirToList += "/" + currentDir;
         }
 
         FTPFile[] files = this.connect.listFiles(dirToList);
@@ -134,7 +134,38 @@ public class FTP {
         return this.pathPhotos;
     }
     
-    public void deleteCache() throws IOException {
-        this.connect.removeDirectory(this.pathPhotos + "/cache");
+    public boolean deleteCache() throws IOException {
+        return this.removeDirectory(this.pathPhotos + "/cache", "");
+    }
+    
+    public boolean removeDirectory(String parentDir, String currentDir) throws IOException {
+        
+        String dirToList = parentDir;
+        boolean result = false;
+        
+        if (!currentDir.equals("")) { dirToList += "/" + currentDir; }
+ 
+        FTPFile[] subFiles = this.connect.listFiles(dirToList);
+ 
+        if (subFiles != null && subFiles.length > 0) {
+            
+            for (FTPFile aFile : subFiles) {
+                
+                String currentFileName = aFile.getName();
+                
+                if (currentFileName.equals(".") || currentFileName.equals("..")) { continue; }
+                
+                String filePath = parentDir + "/" + currentDir + "/" + currentFileName;
+                
+                if (currentDir.equals("")) { filePath = parentDir + "/" + currentFileName; }
+ 
+                if (aFile.isDirectory()) { this.removeDirectory(dirToList, currentFileName); } 
+                else { this.connect.deleteFile(filePath); }
+            }
+ 
+            result = this.connect.removeDirectory(dirToList);
+        }
+        
+        return result;
     }
 }

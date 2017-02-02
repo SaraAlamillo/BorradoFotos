@@ -74,7 +74,7 @@ public class BorradoFotos {
         }
 
         System.out.println();
-        System.out.println("¿Desea borrar la caché de las fotos?");
+        System.out.print("¿Desea borrar la caché de las fotos? ");
         while (!"si".equals(opcionString.toLowerCase()) && !"no".equals(opcionString.toLowerCase()) && !"s".equals(opcionString.toLowerCase()) && !"n".equals(opcionString.toLowerCase())) {
             in = new Scanner(System.in);
             if (in.hasNextLine()) {
@@ -84,9 +84,13 @@ public class BorradoFotos {
         }
 
         if ("si".equals(opcionString.toLowerCase()) || "s".equals(opcionString.toLowerCase())) {
-            connectFTP.deleteCache();
+            if (connectFTP.deleteCache()) {
+                System.out.println("Se ha borrado la memoria caché de las fotos");
+            } else {
+                System.out.println("Esto no debería estar pasando... La caché no se ha podido borrar...");
+            }
         }
-        
+
         System.out.println();
         System.out.println("Adios humano");
 
