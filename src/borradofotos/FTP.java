@@ -69,6 +69,13 @@ public class FTP {
 
     }
 
+    private void disconnectFTP() throws IOException {
+        if (this.connect.isConnected()) {
+            this.connect.logout();
+            this.connect.disconnect();
+        }
+    }
+
     public void setPhotosServer() throws IOException {
         this.setPhotosServer(pathPhotos, "");
     }
@@ -133,39 +140,52 @@ public class FTP {
     public String getPathPhotos() {
         return this.pathPhotos;
     }
-    
+
     public boolean deleteCache() throws IOException {
-        return this.removeDirectory(this.pathPhotos + "/cache", "");
+        return this.removeDirectory(this.pathPhotos + "/cache", "", 0);
     }
-    
-    public boolean removeDirectory(String parentDir, String currentDir) throws IOException {
-        
+
+    public boolean removeDirectory(String parentDir, String currentDir, int level) throws IOException {
+        if (level == 1 || level == 2) {
+            this.disconnectFTP();
+            this.connectFTP();
+        }
+
         String dirToList = parentDir;
         boolean result = false;
-        
-        if (!currentDir.equals("")) { dirToList += "/" + currentDir; }
- 
+
+        if (!currentDir.equals("")) {
+            dirToList += "/" + currentDir;
+        }
+
         FTPFile[] subFiles = this.connect.listFiles(dirToList);
- 
+
         if (subFiles != null && subFiles.length > 0) {
-            
+
             for (FTPFile aFile : subFiles) {
-                
+
                 String currentFileName = aFile.getName();
-                
-                if (currentFileName.equals(".") || currentFileName.equals("..")) { continue; }
-                
+
+                if (currentFileName.equals(".") || currentFileName.equals("..")) {
+                    continue;
+                }
+
                 String filePath = parentDir + "/" + currentDir + "/" + currentFileName;
-                
-                if (currentDir.equals("")) { filePath = parentDir + "/" + currentFileName; }
- 
-                if (aFile.isDirectory()) { this.removeDirectory(dirToList, currentFileName); } 
-                else { this.connect.deleteFile(filePath); }
+
+                if (currentDir.equals("")) {
+                    filePath = parentDir + "/" + currentFileName;
+                }
+
+                if (aFile.isDirectory()) {
+                    this.removeDirectory(dirToList, currentFileName, level + 1);
+                } else {
+                    this.connect.deleteFile(filePath);
+                }
             }
- 
+
             result = this.connect.removeDirectory(dirToList);
         }
-        
+
         return result;
     }
 }

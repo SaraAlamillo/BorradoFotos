@@ -45,10 +45,15 @@ public class BorradoFotos {
         local = opcionInt != 2;
         System.out.println();
 
+        System.out.println("...Conectando al FTP...");
         connectFTP = new FTP();
+        System.out.println("...Cotilleando las fotos del servidor...");
         connectFTP.setPhotosServer();
+        System.out.println("...Conectando a la base de datos...");
         connectDB = new DataBase();
+        System.out.println("...Cotilleando las fotos de la base de datos...");
         dbPhotos = connectDB.getPhotos();
+        System.out.println("...Comparando las fotos de ambos sitios...");
         oldPhotos = connectFTP.getOldPhotos(dbPhotos);
 
         if (oldPhotos.isEmpty()) {
@@ -84,6 +89,7 @@ public class BorradoFotos {
         }
 
         if ("si".equals(opcionString.toLowerCase()) || "s".equals(opcionString.toLowerCase())) {
+            System.out.println("...Quitando chasca de la caché...");
             if (connectFTP.deleteCache()) {
                 System.out.println("Se ha borrado la memoria caché de las fotos");
             } else {
