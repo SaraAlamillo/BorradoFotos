@@ -19,7 +19,7 @@ public class FTP {
     private final List<String> notTouch;
     private int photosDelete;
     private final List<String> photosServer;
-    private String pathPhotos;
+    private final String pathPhotos;
 
     public FTP() throws IOException {
 
@@ -132,5 +132,9 @@ public class FTP {
 
     public String getPathPhotos() {
         return this.pathPhotos;
+    }
+    
+    public void deleteCache() throws IOException {
+        this.connect.removeDirectory(this.pathPhotos + "/cache");
     }
 }
