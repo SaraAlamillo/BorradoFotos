@@ -2,7 +2,7 @@ package borradofotos;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.*;
+
 
 /**
  * Con esta pequeña aplicación podemos eliminar todas las fotos antiguas que ya
@@ -12,7 +12,7 @@ import java.util.*;
  */
 public class BorradoFotos {
 
-    public static boolean local;
+    public static boolean local = true;
 
     /**
      * @param args the command line arguments
@@ -20,7 +20,7 @@ public class BorradoFotos {
      * @throws java.io.IOException
      */
     public static void main(String[] args) throws SQLException, IOException {
-
+        /*
         int opcionInt = 0;
         String opcionString = "";
         Scanner in;
@@ -99,6 +99,9 @@ public class BorradoFotos {
 
         System.out.println();
         System.out.println("Adios humano");
+         */
+        Image img = new Image();
+        img.optimize("C:\\Users\\pc\\Pictures\\test.jpg", 0.05f);
 
     }
 }

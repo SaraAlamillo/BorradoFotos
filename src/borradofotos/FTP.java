@@ -5,8 +5,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.*;
-import org.apache.commons.net.ftp.*;
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPFile;
+import org.apache.commons.net.ftp.FTPReply;
 
 /**
  * Realiza las conexiones con el servidor FTP
@@ -255,17 +258,12 @@ public class FTP {
             parentDir.mkdir();
         }
 
-        OutputStream outputStream = new BufferedOutputStream(
-                new FileOutputStream(downloadFile));
-        try {
+        try (OutputStream outputStream = new BufferedOutputStream(
+                new FileOutputStream(downloadFile))) {
             this.connect.setFileType(FTPClient.BINARY_FILE_TYPE);
             return this.connect.retrieveFile(remoteFilePath, outputStream);
         } catch (IOException ex) {
             throw ex;
-        } finally {
-            if (outputStream != null) {
-                outputStream.close();
-            }
         }
     }
 }
