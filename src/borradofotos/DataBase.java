@@ -30,10 +30,10 @@ public class DataBase {
             this.user = "root";
             this.server = "192.168.0.166";
         } else {
-            this.DB = "wikkiwi_m";
-            this.password = "\\SgO3^Va1v~5";
-            this.user = "mg_wikki";
-            this.server = "vps21021.inmotionhosting.com";
+            this.DB = "";
+            this.password = "";
+            this.user = "";
+            this.server = "";
         }
 
         this.connectDB();
