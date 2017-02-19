@@ -52,9 +52,9 @@ public class FTP {
             this.user = "admin";
             this.password = "wikkiwi";
         } else {
-            this.user = "salamillo@wikkiwi.com";
-            this.password = "5{*:ntbS=W+x";
-            this.server = "23.235.204.50";
+            this.user = "";
+            this.password = "";
+            this.server = "";
         }
         this.connectFTP();
     }
